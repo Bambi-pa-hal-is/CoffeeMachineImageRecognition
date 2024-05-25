@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.5.5.4823" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(OS)' != 'Windows_NT' ">
+    <PackageReference Include="Emgu.CV.runtime.linux.arm" Version="4.5.5.4823" />
+  </ItemGroup>
+</Project>
