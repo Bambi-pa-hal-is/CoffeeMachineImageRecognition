@@ -8,6 +8,6 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(OS)' != 'Windows_NT' ">
-    <PackageReference Include="Emgu.CV.runtime.linux.arm" Version="4.5.5.4823" />
+    <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.5.5.4823" />
   </ItemGroup>
 </Project>
