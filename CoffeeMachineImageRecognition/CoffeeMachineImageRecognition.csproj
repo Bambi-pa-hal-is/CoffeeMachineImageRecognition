@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Emgu.CV" Version="4.9.0.5494" />
+    <PackageReference Include="Emgu.CV.runtime.debian-arm64" Version="4.9.0.5494" />
     <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.9.0.5494" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
