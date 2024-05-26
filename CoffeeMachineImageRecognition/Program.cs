@@ -25,6 +25,8 @@ namespace CoffeeMachineImageRecognition
         };
         static async Task Main(string[] args)
         {
+            Console.WriteLine("starting!");
+
             // Setup dependency injection
             var serviceCollection = new ServiceCollection()
                 .AddSingleton<ICamera>(provider =>
@@ -46,13 +48,16 @@ namespace CoffeeMachineImageRecognition
 
             var services = serviceCollection.BuildServiceProvider();
             var httpClient = services.GetService<HttpClient>();
+            Console.WriteLine("loading yolomodel...");
             var yoloModel = await httpClient!.GetByteArrayAsync("https://kosatuppspaces.fra1.cdn.digitaloceanspaces.com/Gb/Static/best.onnx");
             var camera = services.GetService<ICamera>();
             if (camera == null)
             {
                 throw new ArgumentNullException("Missing camera");
             }
+            Console.WriteLine("yolo starting");
             var yoloDetector = new YoloDetector(yoloModel);
+            Console.WriteLine("detecting...");
             // Initialize ONNX runtime
             while (true)
             {
