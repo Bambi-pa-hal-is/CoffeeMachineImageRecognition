@@ -36,11 +36,11 @@ namespace CoffeeMachineImageRecognition
                     Console.WriteLine("Failed to set frame height");
                 }
 
-                Console.WriteLine("Setting RGB");
-                if (!_capture.Set(CapProp.ConvertRgb, 1))
-                {
-                    Console.WriteLine("Failed to set RGB conversion");
-                }
+                //Console.WriteLine("Setting RGB");
+                //if (!_capture.Set(CapProp.ConvertRgb, 1))
+                //{
+                //    Console.WriteLine("Failed to set RGB conversion");
+                //}
 
                 Console.WriteLine("Camera initialized successfully");
             }
