@@ -70,7 +70,6 @@ namespace CoffeeMachineImageRecognition
                 }
                 else
                 {
-                    Console.WriteLine("Camera is empty");
                 }
 
                 if (CvInvoke.WaitKey(1) == 27) // Escape key to exit
