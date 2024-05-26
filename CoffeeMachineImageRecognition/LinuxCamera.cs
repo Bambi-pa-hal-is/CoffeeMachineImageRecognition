@@ -17,7 +17,7 @@ namespace CoffeeMachineImageRecognition
             try
             {
                 Console.WriteLine("loading camera");
-                _capture = new VideoCapture(0);
+                _capture = new VideoCapture(0, VideoCapture.API.V4L2);
                 Console.WriteLine("setting width");
                 _capture.Set(CapProp.FrameWidth, 320);
                 Console.WriteLine("setting height");
