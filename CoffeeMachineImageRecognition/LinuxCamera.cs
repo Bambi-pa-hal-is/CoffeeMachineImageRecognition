@@ -17,12 +17,14 @@ namespace CoffeeMachineImageRecognition
             try
             {
                 Console.WriteLine("Loading camera");
-                _capture = new VideoCapture(0, VideoCapture.API.V4L2);
+                _capture = new VideoCapture(0);
 
                 if (!_capture.IsOpened)
                 {
                     throw new Exception("Camera could not be opened.");
                 }
+                Console.WriteLine(_capture.BackendName);
+                Console.WriteLine(_capture.CaptureSource);
 
                 Console.WriteLine("Setting width");
                 if (!_capture.Set(CapProp.FrameWidth, 640))
