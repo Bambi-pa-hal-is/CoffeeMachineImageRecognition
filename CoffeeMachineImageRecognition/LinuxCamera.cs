@@ -25,13 +25,13 @@ namespace CoffeeMachineImageRecognition
                 }
 
                 Console.WriteLine("Setting width");
-                if (!_capture.Set(CapProp.FrameWidth, 320))
+                if (!_capture.Set(CapProp.FrameWidth, 640))
                 {
                     Console.WriteLine("Failed to set frame width");
                 }
 
                 Console.WriteLine("Setting height");
-                if (!_capture.Set(CapProp.FrameHeight, 320))
+                if (!_capture.Set(CapProp.FrameHeight, 480))
                 {
                     Console.WriteLine("Failed to set frame height");
                 }
