@@ -68,6 +68,10 @@ namespace CoffeeMachineImageRecognition
                     var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
                     Console.WriteLine(classifiedImage + " confidence: " + confidence);
                 }
+                else
+                {
+                    Console.WriteLine("Camera is empty");
+                }
 
                 if (CvInvoke.WaitKey(1) == 27) // Escape key to exit
                 {
