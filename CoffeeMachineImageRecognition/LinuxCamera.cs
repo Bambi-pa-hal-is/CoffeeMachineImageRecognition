@@ -40,7 +40,7 @@ namespace CoffeeMachineImageRecognition
         {
             // Command to capture image with libcamera-still
             string command = "libcamera-still";
-            string args = "-o -"; // Output to stdout
+            string args = "--width 320 --height 320 -o -"; // Output to stdout
 
             // Start the process
             var startInfo = new ProcessStartInfo
