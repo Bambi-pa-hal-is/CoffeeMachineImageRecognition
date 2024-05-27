@@ -5,6 +5,7 @@ using Emgu.CV.Dnn;
 using Emgu.CV.Structure;
 using System;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace CoffeeMachineImageRecognition
 {
@@ -60,35 +61,64 @@ namespace CoffeeMachineImageRecognition
             var yoloDetector = new YoloDetector(yoloModel);
             Console.WriteLine("detecting...");
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            // Initialize ONNX runtime
-            while (true)
-            {
-                // Capture frame
-                using Mat frame = camera.CaptureFrame();
-                if (!frame.IsEmpty)
-                {
-                    var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
+            var frameQueue = new ConcurrentQueue<Mat>();
+            var cts = new CancellationTokenSource();
 
-                    // Calculate elapsed time
+            // Start frame capturing in a separate thread
+            var captureTask = Task.Run(() => CaptureFrames(camera, frameQueue, cts.Token));
+
+            // Start image classification in the main thread
+            await ClassifyFrames(yoloDetector, frameQueue, cts.Token);
+
+            // Stop capturing frames when done
+            cts.Cancel();
+            await captureTask;
+        }
+
+        static async Task CaptureFrames(ICamera camera, ConcurrentQueue<Mat> frameQueue, CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    using Mat frame = camera.CaptureFrame();
+                    if (!frame.IsEmpty)
+                    {
+                        frameQueue.Enqueue(frame.Clone());
+                    }
+                    await Task.Delay(10); // Adjust delay as necessary
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error capturing frames: {ex.Message}");
+            }
+        }
+
+        static async Task ClassifyFrames(YoloDetector yoloDetector, ConcurrentQueue<Mat> frameQueue, CancellationToken token)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            while (!token.IsCancellationRequested)
+            {
+                if (frameQueue.TryDequeue(out Mat frame))
+                {
+                    stopwatch.Restart();
+                    var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
                     stopwatch.Stop();
-                    TimeSpan elapsed = stopwatch.Elapsed;
 
                     // Print the classified image, confidence, and elapsed time
-                    Console.WriteLine($"{classifiedImage} confidence: {confidence} elapsed time: {elapsed.TotalSeconds} s");
+                    Console.WriteLine($"{classifiedImage} confidence: {confidence} elapsed time: {stopwatch.Elapsed.TotalSeconds} s");
 
-                    // Restart the stopwatch
-                    stopwatch.Restart();
+                    frame.Dispose();
                 }
                 else
                 {
-                    // Optionally handle the case where the frame is empty
+                    await Task.Delay(10); // Adjust delay as necessary
                 }
 
                 if (CvInvoke.WaitKey(1) == 27) // Escape key to exit
                 {
-                    break;
+                    token.ThrowIfCancellationRequested();
                 }
             }
         }
