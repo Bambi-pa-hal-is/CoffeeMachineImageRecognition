@@ -30,7 +30,7 @@ public class LinuxCamera : ICamera, IDisposable
     private void StartLibCameraVidProcess()
     {
         string command = "libcamera-vid";
-        string args = "--codec mjpeg --inline --width 320 --height 320 -o -"; // Set resolution and output to stdout
+        string args = "--codec mjpeg --inline --width 320 --height 320 -t 0 -o -"; // Set resolution and output to stdout
 
         var startInfo = new ProcessStartInfo
         {
