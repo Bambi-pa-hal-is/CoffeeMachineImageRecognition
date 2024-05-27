@@ -5,57 +5,66 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace CoffeeMachineImageRecognition
 {
     public class LinuxCamera : ICamera
     {
-        private VideoCapture _capture;
-
         public LinuxCamera()
         {
             try
             {
-                _capture = new VideoCapture(0, VideoCapture.API.OpencvMjpeg);
-
-                if (!_capture.IsOpened)
-                {
-                    throw new Exception("Camera could not be opened.");
-                }
-                Console.WriteLine(_capture.BackendName);
-                Console.WriteLine(_capture.CaptureSource);
-
-                Console.WriteLine("Setting width");
-                if (!_capture.Set(CapProp.FrameWidth, 640))
-                {
-                    Console.WriteLine("Failed to set frame width");
-                }
-
-                Console.WriteLine("Setting height");
-                if (!_capture.Set(CapProp.FrameHeight, 480))
-                {
-                    Console.WriteLine("Failed to set frame height");
-                }
-
-                //Console.WriteLine("Setting RGB");
-                //if (!_capture.Set(CapProp.ConvertRgb, 1))
-                //{
-                //    Console.WriteLine("Failed to set RGB conversion");
-                //}
-
+                // Initialize the camera
                 Console.WriteLine("Camera initialized successfully");
             }
             catch (Exception e)
             {
+                Console.WriteLine($"Camera initialization failed: {e.Message}");
                 throw;
             }
         }
 
+
         public Mat CaptureFrame()
         {
+            byte[] imageData = CaptureImageFromLibCamera();
+
+            // Convert the image data to a Mat object in Emgu CV
             Mat frame = new Mat();
-            _capture.Read(frame);
+            CvInvoke.Imdecode(imageData, ImreadModes.Color, frame);
             return frame;
+        }
+
+        private byte[] CaptureImageFromLibCamera()
+        {
+            // Command to capture image with libcamera-still
+            string command = "libcamera-still";
+            string args = "-o -"; // Output to stdout
+
+            // Start the process
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = command,
+                Arguments = args,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (var process = new Process { StartInfo = startInfo })
+            {
+                process.Start();
+
+                // Read the output stream to get the image data
+                using (var ms = new MemoryStream())
+                {
+                    process.StandardOutput.BaseStream.CopyTo(ms);
+                    process.WaitForExit();
+                    return ms.ToArray();
+                }
+            }
         }
     }
 }
