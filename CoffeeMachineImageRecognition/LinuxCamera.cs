@@ -16,8 +16,7 @@ namespace CoffeeMachineImageRecognition
         {
             try
             {
-                Console.WriteLine("Loading camera");
-                _capture = new VideoCapture(0, VideoCapture.API.DShow);
+                _capture = new VideoCapture(0, VideoCapture.API.OpencvMjpeg);
 
                 if (!_capture.IsOpened)
                 {
