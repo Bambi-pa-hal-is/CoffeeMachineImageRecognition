@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Emgu.CV.Dnn;
 using Emgu.CV.Structure;
 using System;
+using System.Diagnostics;
 
 namespace CoffeeMachineImageRecognition
 {
@@ -58,6 +59,9 @@ namespace CoffeeMachineImageRecognition
             Console.WriteLine("yolo starting");
             var yoloDetector = new YoloDetector(yoloModel);
             Console.WriteLine("detecting...");
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             // Initialize ONNX runtime
             while (true)
             {
@@ -66,10 +70,20 @@ namespace CoffeeMachineImageRecognition
                 if (!frame.IsEmpty)
                 {
                     var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
-                    Console.WriteLine(classifiedImage + " confidence: " + confidence);
+
+                    // Calculate elapsed time
+                    stopwatch.Stop();
+                    TimeSpan elapsed = stopwatch.Elapsed;
+
+                    // Print the classified image, confidence, and elapsed time
+                    Console.WriteLine($"{classifiedImage} confidence: {confidence} elapsed time: {elapsed.TotalSeconds} s");
+
+                    // Restart the stopwatch
+                    stopwatch.Restart();
                 }
                 else
                 {
+                    // Optionally handle the case where the frame is empty
                 }
 
                 if (CvInvoke.WaitKey(1) == 27) // Escape key to exit
