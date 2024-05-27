@@ -79,18 +79,14 @@ namespace CoffeeMachineImageRecognition
         {
             try
             {
-                Stopwatch stopwatch = new Stopwatch();
                 while (!token.IsCancellationRequested)
                 {
-                    stopwatch.Restart();
                     using Mat frame = camera.CaptureFrame();
                     if (!frame.IsEmpty)
                     {
                         frameQueue.Enqueue(frame.Clone());
                     }
                     await Task.Delay(10); // Adjust delay as necessary
-                    stopwatch.Stop();
-                    Console.WriteLine($"Camera capture: {stopwatch.Elapsed.TotalSeconds} s");
                 }
             }
             catch (Exception ex)
