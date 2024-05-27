@@ -11,20 +11,7 @@ namespace CoffeeMachineImageRecognition
 {
     internal class Program
     {
-        private static List<string> _labels = new List<string>() {
-            "cafeaulait",
-            "caffelatte",
-            "cappuccino",
-            "chocodream",
-            "coffee",
-            "espresso",
-            "hotchocolate",
-            "hotwater",
-            "lattemachiato",
-            "lungo",
-            "menu",
-            "unknown",
-        };
+
         static async Task Main(string[] args)
         {
             Console.WriteLine("starting!");
@@ -81,10 +68,10 @@ namespace CoffeeMachineImageRecognition
             {
                 while (!token.IsCancellationRequested)
                 {
-                    using Mat frame = camera.CaptureFrame();
-                    if (!frame.IsEmpty)
+                    Mat frame = camera.CaptureFrame();
+                    if (frame != null && !frame.IsEmpty)
                     {
-                        frameQueue.Enqueue(frame.Clone());
+                        frameQueue.Enqueue(frame);
                     }
                     await Task.Delay(10); // Adjust delay as necessary
                 }

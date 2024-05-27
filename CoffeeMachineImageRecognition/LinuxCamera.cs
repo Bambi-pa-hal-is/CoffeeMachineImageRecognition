@@ -52,7 +52,6 @@ public class LinuxCamera : ICamera, IDisposable
         using (var ms = new MemoryStream())
         {
             int bytesRead;
-            // Read enough data to form a frame
             while ((bytesRead = _outputStream.Read(_buffer, 0, _buffer.Length)) > 0)
             {
                 ms.Write(_buffer, 0, bytesRead);
@@ -62,16 +61,22 @@ public class LinuxCamera : ICamera, IDisposable
                 }
             }
             byte[] imageData = ms.ToArray();
-            Mat frame = new Mat();
-            CvInvoke.Imdecode(imageData, ImreadModes.Color, frame);
-            return frame;
+            if (imageData.Length > 0 && IsCompleteFrame(imageData))
+            {
+                Mat frame = new Mat();
+                CvInvoke.Imdecode(imageData, ImreadModes.Color, frame);
+                return frame;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
     private bool IsCompleteFrame(byte[] imageData)
     {
         // Check if the imageData represents a complete MJPEG frame
-        // Simple check for the JPEG end marker (0xFFD9)
         if (imageData.Length < 2) return false;
         return imageData[^2] == 0xFF && imageData[^1] == 0xD9;
     }
