@@ -93,6 +93,7 @@ namespace CoffeeMachineImageRecognition
                     var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
                     stopwatch.Stop();
 
+                    Console.Clear();
                     // Print the classified image, confidence, and elapsed time
                     Console.WriteLine($"{classifiedImage} confidence: {confidence} elapsed time: {stopwatch.Elapsed.TotalSeconds} s");
 
