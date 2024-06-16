@@ -117,7 +117,7 @@ namespace CoffeeMachineImageRecognition
                 {
                     await Task.Delay(10); // Adjust delay as necessary
                 }
-                while (frameQueue.Count > 0)
+                while (frameQueue.Count > 2)
                 {
                     if (frameQueue.TryDequeue(out Mat? excessFrame))
                     {
