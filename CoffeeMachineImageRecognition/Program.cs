@@ -110,7 +110,7 @@ namespace CoffeeMachineImageRecognition
 
                     Console.Clear();
                     // Print the classified image, confidence, and elapsed time
-                    Console.WriteLine($"{classifiedImage} confidence  updatetest  : {confidence} elapsed time: {stopwatch.Elapsed.TotalSeconds} s");
+                    Console.WriteLine($"{classifiedImage} confidence: {confidence} elapsed time: {stopwatch.Elapsed.TotalSeconds} s");
                     frame.Dispose();
                 }
                 else
