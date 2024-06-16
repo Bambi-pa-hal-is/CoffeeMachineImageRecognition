@@ -115,7 +115,8 @@ namespace CoffeeMachineImageRecognition
                 }
                 else
                 {
-                    await Task.Delay(10); // Adjust delay as necessary
+                    Console.Clear();
+                    Console.WriteLine($"Empty queue");
                 }
                 while (frameQueue.Count > 2)
                 {
