@@ -20,11 +20,11 @@ namespace CoffeeMachineImageRecognition
 
         public async Task ProcessBeverageEnum(BeverageEnum detectedBeverage, double confidence)
         {
-            //if (confidence < ConfidenceThreshold)
-            //{
-            //    // Confidence below threshold, do nothing
-            //    return;
-            //}
+            if (confidence < ConfidenceThreshold)
+            {
+                // Confidence below threshold, do nothing
+                return;
+            }
 
             if (detectedBeverage == BeverageEnum.Unknown)
             {
