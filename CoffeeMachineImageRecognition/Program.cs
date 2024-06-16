@@ -118,7 +118,7 @@ namespace CoffeeMachineImageRecognition
                     Console.Clear();
                     Console.WriteLine($"Empty queue");
                 }
-                while (frameQueue.Count > 2)
+                while (frameQueue.Count > 0)
                 {
                     if (frameQueue.TryDequeue(out Mat? excessFrame))
                     {

@@ -55,7 +55,7 @@ public class LinuxCamera : ICamera, IDisposable
         {
             if (!string.IsNullOrEmpty(e.Data))
             {
-                Console.WriteLine($"libcamera-vid error: {e.Data}");
+                //Console.WriteLine($"libcamera-vid error: {e.Data}");
             }
         };
         _process.BeginErrorReadLine();
@@ -106,6 +106,7 @@ public class LinuxCamera : ICamera, IDisposable
 
     private void RestartCameraProcess()
     {
+        Console.WriteLine("RESTARTING");
         DisposeProcess();
         InitializeCamera();
     }
