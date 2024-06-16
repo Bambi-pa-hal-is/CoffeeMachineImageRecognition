@@ -14,10 +14,14 @@ public class LinuxCamera : ICamera, IDisposable
 
     public LinuxCamera()
     {
+        InitializeCamera();
+    }
+
+    private void InitializeCamera()
+    {
         try
         {
             StartLibCameraVidProcess();
-
             Console.WriteLine("Camera initialized successfully");
         }
         catch (Exception e)
@@ -45,32 +49,51 @@ public class LinuxCamera : ICamera, IDisposable
         _process = new Process { StartInfo = startInfo };
         _process.Start();
         _outputStream = _process.StandardOutput.BaseStream;
+
+        // Log any errors from the process
+        _process.ErrorDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                Console.WriteLine($"libcamera-vid error: {e.Data}");
+            }
+        };
+        _process.BeginErrorReadLine();
     }
 
     public Mat CaptureFrame()
     {
-        using (var ms = new MemoryStream())
+        try
         {
-            int bytesRead;
-            while ((bytesRead = _outputStream.Read(_buffer, 0, _buffer.Length)) > 0)
+            using (var ms = new MemoryStream())
             {
-                ms.Write(_buffer, 0, bytesRead);
-                if (IsCompleteFrame(ms.ToArray()))
+                int bytesRead;
+                while ((bytesRead = _outputStream.Read(_buffer, 0, _buffer.Length)) > 0)
                 {
-                    break;
+                    ms.Write(_buffer, 0, bytesRead);
+                    if (IsCompleteFrame(ms.ToArray()))
+                    {
+                        break;
+                    }
+                }
+                byte[] imageData = ms.ToArray();
+                if (imageData.Length > 0 && IsCompleteFrame(imageData))
+                {
+                    Mat frame = new Mat();
+                    CvInvoke.Imdecode(imageData, ImreadModes.Color, frame);
+                    return frame;
+                }
+                else
+                {
+                    return null;
                 }
             }
-            byte[] imageData = ms.ToArray();
-            if (imageData.Length > 0 && IsCompleteFrame(imageData))
-            {
-                Mat frame = new Mat();
-                CvInvoke.Imdecode(imageData, ImreadModes.Color, frame);
-                return frame;
-            }
-            else
-            {
-                return null;
-            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error capturing frame: {e.Message}");
+            RestartCameraProcess();
+            return null;
         }
     }
 
@@ -81,10 +104,28 @@ public class LinuxCamera : ICamera, IDisposable
         return imageData[^2] == 0xFF && imageData[^1] == 0xD9;
     }
 
+    private void RestartCameraProcess()
+    {
+        DisposeProcess();
+        InitializeCamera();
+    }
+
+    private void DisposeProcess()
+    {
+        try
+        {
+            _process?.Kill();
+            _process?.Dispose();
+            _outputStream?.Dispose();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error disposing process: {e.Message}");
+        }
+    }
+
     public void Dispose()
     {
-        _process?.Kill();
-        _process?.Dispose();
-        _outputStream?.Dispose();
+        DisposeProcess();
     }
 }
