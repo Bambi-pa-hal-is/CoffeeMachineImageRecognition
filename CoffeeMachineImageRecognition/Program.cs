@@ -34,12 +34,25 @@ namespace CoffeeMachineImageRecognition
                     }
                 });
             serviceCollection.AddHttpClient();
+            serviceCollection.AddSingleton<CoffeeMachineStateService>();
+            serviceCollection.AddSingleton<CoffeeMachineApiClient>(provider =>
+            {
+                if (OperatingSystem.IsLinux())
+                {
+                    return new CoffeeMachineApiClient(provider.GetService<HttpClient>()!, "https://kaffe.kosatupp.se/");
+                }
+                else
+                {
+                    return new CoffeeMachineApiClient(provider!.GetService<HttpClient>()!, "https://localhost:8080");
+                }
+            });
 
             var services = serviceCollection.BuildServiceProvider();
             var httpClient = services.GetService<HttpClient>();
             Console.WriteLine("loading yolomodel...");
             var yoloModel = await httpClient!.GetByteArrayAsync("https://kosatuppspaces.fra1.cdn.digitaloceanspaces.com/Gb/Static/best.onnx");
             var camera = services.GetService<ICamera>();
+            var coffeeMachineStateService = services.GetService<CoffeeMachineStateService>();
             if (camera == null)
             {
                 throw new ArgumentNullException("Missing camera");
@@ -55,7 +68,7 @@ namespace CoffeeMachineImageRecognition
             var captureTask = Task.Run(() => CaptureFrames(camera, frameQueue, cts.Token));
 
             // Start image classification in the main thread
-            await ClassifyFrames(yoloDetector, frameQueue, cts.Token);
+            await ClassifyFrames(yoloDetector, frameQueue, coffeeMachineStateService, cts.Token);
 
             // Stop capturing frames when done
             cts.Cancel();
@@ -82,27 +95,36 @@ namespace CoffeeMachineImageRecognition
             }
         }
 
-        static async Task ClassifyFrames(YoloDetector yoloDetector, ConcurrentQueue<Mat> frameQueue, CancellationToken token)
+        static async Task ClassifyFrames(YoloDetector yoloDetector, ConcurrentQueue<Mat> frameQueue, CoffeeMachineStateService? coffeeMachineStateService, CancellationToken token)
         {
             Stopwatch stopwatch = new Stopwatch();
             while (!token.IsCancellationRequested)
             {
-                if (frameQueue.TryDequeue(out Mat frame))
+                if (frameQueue.TryDequeue(out Mat? frame))
                 {
                     stopwatch.Restart();
                     var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
+                    var classificationEnum = BeverageLabels.MapStringToEnum(classifiedImage);
+                    await coffeeMachineStateService!.ProcessBeverageEnum(classificationEnum, confidence);
                     stopwatch.Stop();
 
                     Console.Clear();
                     // Print the classified image, confidence, and elapsed time
                     Console.WriteLine($"{classifiedImage} confidence: {confidence} elapsed time: {stopwatch.Elapsed.TotalSeconds} s");
-
                     frame.Dispose();
                 }
                 else
                 {
                     await Task.Delay(10); // Adjust delay as necessary
                 }
+                while (frameQueue.Count > 0)
+                {
+                    if (frameQueue.TryDequeue(out Mat? excessFrame))
+                    {
+                        excessFrame?.Dispose();
+                    }
+                }
+                GC.Collect();
 
                 if (CvInvoke.WaitKey(1) == 27) // Escape key to exit
                 {

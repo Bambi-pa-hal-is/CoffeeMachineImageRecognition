@@ -13,20 +13,6 @@ namespace CoffeeMachineImageRecognition
     public class YoloDetector
     {
         private Net _net;
-        private List<string> _labels = new List<string>() {
-            "cafeaulait",
-            "caffelatte",
-            "cappuccino",
-            "chocodream",
-            "coffee",
-            "espresso",
-            "hotchocolate",
-            "hotwater",
-            "lattemachiato",
-            "lungo",
-            "menu",
-            "unknown",
-        };
 
         public YoloDetector(byte[] model)
         {
@@ -72,7 +58,7 @@ namespace CoffeeMachineImageRecognition
 
         public string IndexToLabel(int index)
         {
-            return _labels.ElementAtOrDefault(index) ?? "Error";
+            return BeverageLabels.AllLabels.ElementAtOrDefault(index) ?? "Error";
         }
 
 
