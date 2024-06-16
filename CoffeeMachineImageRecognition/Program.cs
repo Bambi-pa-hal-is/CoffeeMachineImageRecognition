@@ -115,8 +115,8 @@ namespace CoffeeMachineImageRecognition
                 }
                 else
                 {
-                    Console.Clear();
-                    Console.WriteLine($"Empty queue");
+                    //Console.Clear();
+                    //Console.WriteLine($"Empty queue");
                 }
                 while (frameQueue.Count > 0)
                 {
