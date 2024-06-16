@@ -20,11 +20,11 @@ namespace CoffeeMachineImageRecognition
 
         public async Task ProcessBeverageEnum(BeverageEnum detectedBeverage, double confidence)
         {
-            if (confidence < ConfidenceThreshold)
-            {
-                // Confidence below threshold, do nothing
-                return;
-            }
+            //if (confidence < ConfidenceThreshold)
+            //{
+            //    // Confidence below threshold, do nothing
+            //    return;
+            //}
 
             if (detectedBeverage == BeverageEnum.Unknown)
             {
@@ -42,6 +42,7 @@ namespace CoffeeMachineImageRecognition
             if (_currentState == BeverageEnum.Menu && detectedBeverage != BeverageEnum.Menu)
             {
                 // State changes from menu to something else, send the enum to the API
+                Console.WriteLine("Sending input " + detectedBeverage.ToString());
                 await _client.Update(detectedBeverage);
             }
 
