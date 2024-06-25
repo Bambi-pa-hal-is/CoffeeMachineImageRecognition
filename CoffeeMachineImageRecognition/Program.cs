@@ -43,7 +43,7 @@ namespace CoffeeMachineImageRecognition
                 }
                 else
                 {
-                    return new CoffeeMachineApiClient(provider!.GetService<HttpClient>()!, "https://localhost:8080");
+                    return new CoffeeMachineApiClient(provider!.GetService<HttpClient>()!, "https://kaffe.kosatupp.se/");
                 }
             });
 
@@ -106,11 +106,14 @@ namespace CoffeeMachineImageRecognition
                     var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
                     var classificationEnum = BeverageLabels.MapStringToEnum(classifiedImage);
                     await coffeeMachineStateService!.ProcessBeverageEnum(classificationEnum, confidence);
+                    if(coffeeMachineStateService.CheckAndUpdateQuota(classificationEnum))
+                    {
+                        await coffeeMachineStateService.UploadImage(classificationEnum, frame!);
+                    }
                     stopwatch.Stop();
 
                     Console.Clear();
                     // Print the classified image, confidence, and elapsed time
-                    Console.WriteLine($"{classifiedImage} confidence: {confidence} elapsed time: {stopwatch.Elapsed.TotalSeconds} s");
                     frame.Dispose();
                 }
                 else
