@@ -28,7 +28,8 @@ sudo nano /etc/systemd/system/coffeemachine.service
 
 [Unit]
 Description=Coffee Machine Image Recognition Service
-After=network.target
+After=network.target network-online.target
+Wants=network-online.target
 StartLimitIntervalSec=500
 StartLimitBurst=5
 
@@ -44,3 +45,4 @@ Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 
 [Install]
 WantedBy=multi-user.target
+
