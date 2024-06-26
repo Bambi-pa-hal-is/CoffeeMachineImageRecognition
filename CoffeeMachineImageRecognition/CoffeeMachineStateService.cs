@@ -13,6 +13,9 @@ namespace CoffeeMachineImageRecognition
         private BeverageEnum _currentState;
         private readonly CoffeeMachineApiClient _client;
         private const double ConfidenceThreshold = 0.9;
+        private const int DetectionThreshold = 3;
+        private int _consecutiveDetections = 0;
+        private bool _menuDetected = false;
 
         private Dictionary<BeverageEnum, BeverageQuota> _beverageQuotas;
 
@@ -39,36 +42,49 @@ namespace CoffeeMachineImageRecognition
 
         public async Task ProcessBeverageEnum(BeverageEnum detectedBeverage, double confidence)
         {
-
-
             if (confidence < ConfidenceThreshold)
             {
-                // Confidence below threshold, do nothing
+                // Confidence below threshold, reset counter and do nothing
+                _consecutiveDetections = 0;
                 return;
             }
 
             if (detectedBeverage == BeverageEnum.Unknown)
             {
-                // Detected unknown, do nothing
+                // Detected unknown, reset counter and do nothing
+                _consecutiveDetections = 0;
                 return;
             }
 
             if (detectedBeverage == BeverageEnum.Menu)
             {
-                // Detected menu, update the state to Menu
+                // Detected menu, update the state to Menu and reset the counter
                 _currentState = BeverageEnum.Menu;
+                _consecutiveDetections = 0;
+                _menuDetected = true;
                 return;
             }
 
-            if (_currentState == BeverageEnum.Menu && detectedBeverage != BeverageEnum.Menu)
+            if (_currentState == detectedBeverage)
             {
-                // State changes from menu to something else, send the enum to the API
-                Console.WriteLine("Sending input " + detectedBeverage.ToString());
-                await _client.Update(detectedBeverage);
+                // Increment the counter if the same beverage is detected consecutively
+                _consecutiveDetections++;
+            }
+            else
+            {
+                // Reset the counter if a different beverage is detected
+                _consecutiveDetections = 0;
+                _currentState = detectedBeverage;
             }
 
-            // Update the current state to the detected beverage
-            _currentState = detectedBeverage;
+            if (_consecutiveDetections >= DetectionThreshold && _menuDetected)
+            {
+                // State changes from menu to something else, send the enum to the API
+                await _client.Update(detectedBeverage);
+                _currentState = detectedBeverage;
+                // Reset the menu detection flag after sending the update
+                _menuDetected = false;
+            }
         }
 
         public async Task UploadImage(BeverageEnum detectedBeverage, Mat image)
@@ -85,6 +101,10 @@ namespace CoffeeMachineImageRecognition
 
         public bool CheckAndUpdateQuota(BeverageEnum beverage)
         {
+            if(beverage == BeverageEnum.Menu)
+            {
+                return false;
+            }
             if (_beverageQuotas.TryGetValue(beverage, out var quota))
             {
                 return quota.ConsumeQuota();
