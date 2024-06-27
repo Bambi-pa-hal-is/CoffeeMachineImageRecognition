@@ -34,6 +34,7 @@ namespace CoffeeMachineImageRecognition
                 { BeverageEnum.HotChocolate, new BeverageQuota(50) },
                 { BeverageEnum.CaffeLatte, new BeverageQuota(50) },
                 { BeverageEnum.Cappuccino, new BeverageQuota(50) },
+                { BeverageEnum.Lungo, new BeverageQuota(50) },
                 // Add other beverages with specific quotas
                 { BeverageEnum.Menu, new BeverageQuota(5) }, 
                 { BeverageEnum.Unknown, new BeverageQuota(5) },
