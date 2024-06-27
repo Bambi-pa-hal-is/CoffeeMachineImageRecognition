@@ -12,7 +12,7 @@ namespace CoffeeMachineImageRecognition
     {
         private BeverageEnum _currentState;
         private readonly CoffeeMachineApiClient _client;
-        private const double ConfidenceThreshold = 0.9;
+        private const double ConfidenceThreshold = 0.8;
         private const int DetectionThreshold = 3;
         private int _consecutiveDetections = 0;
         private bool _menuDetected = false;
