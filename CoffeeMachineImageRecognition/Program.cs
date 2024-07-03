@@ -106,7 +106,7 @@ namespace CoffeeMachineImageRecognition
                     var (classifiedImage, confidence) = yoloDetector.ClassifyImage(frame);
                     var classificationEnum = BeverageLabels.MapStringToEnum(classifiedImage);
                     await coffeeMachineStateService!.ProcessBeverageEnum(classificationEnum, confidence);
-                    if(coffeeMachineStateService.CheckAndUpdateQuota(classificationEnum))
+                    if(coffeeMachineStateService.CheckAndUpdateQuota(classificationEnum) && confidence > 0.5)
                     {
                         await coffeeMachineStateService.UploadImage(classificationEnum, frame!);
                     }

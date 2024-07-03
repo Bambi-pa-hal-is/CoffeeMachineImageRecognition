@@ -25,15 +25,15 @@ namespace CoffeeMachineImageRecognition
             _currentState = BeverageEnum.Unknown;
             _beverageQuotas = new Dictionary<BeverageEnum, BeverageQuota>
             {
-                { BeverageEnum.Coffee, new BeverageQuota(50) },
-                { BeverageEnum.HotWater, new BeverageQuota(50) },
-                { BeverageEnum.CafeAuLait, new BeverageQuota(50) },
-                { BeverageEnum.Chocodream, new BeverageQuota(50) },
-                { BeverageEnum.Espresso, new BeverageQuota(50) },
-                { BeverageEnum.LatteMachiato, new BeverageQuota(50) },
-                { BeverageEnum.HotChocolate, new BeverageQuota(50) },
-                { BeverageEnum.CaffeLatte, new BeverageQuota(50) },
-                { BeverageEnum.Cappuccino, new BeverageQuota(50) },
+                { BeverageEnum.Coffee, new BeverageQuota(1) },
+                { BeverageEnum.HotWater, new BeverageQuota(1) },
+                { BeverageEnum.CafeAuLait, new BeverageQuota(1) },
+                { BeverageEnum.Chocodream, new BeverageQuota(1) },
+                { BeverageEnum.Espresso, new BeverageQuota(1) },
+                { BeverageEnum.LatteMachiato, new BeverageQuota(1) },
+                { BeverageEnum.HotChocolate, new BeverageQuota(1) },
+                { BeverageEnum.CaffeLatte, new BeverageQuota(1) },
+                { BeverageEnum.Cappuccino, new BeverageQuota(1) },
                 // Add other beverages with specific quotas
                 { BeverageEnum.Menu, new BeverageQuota(5) }, 
                 { BeverageEnum.Unknown, new BeverageQuota(5) },
