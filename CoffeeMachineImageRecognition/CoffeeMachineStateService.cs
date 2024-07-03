@@ -12,7 +12,7 @@ namespace CoffeeMachineImageRecognition
     {
         private BeverageEnum _currentState;
         private readonly CoffeeMachineApiClient _client;
-        private const double ConfidenceThreshold = 0.9;
+        private const double ConfidenceThreshold = 0.8;
         private const int DetectionThreshold = 3;
         private int _consecutiveDetections = 0;
         private bool _menuDetected = false;
@@ -34,6 +34,7 @@ namespace CoffeeMachineImageRecognition
                 { BeverageEnum.HotChocolate, new BeverageQuota(50) },
                 { BeverageEnum.CaffeLatte, new BeverageQuota(50) },
                 { BeverageEnum.Cappuccino, new BeverageQuota(50) },
+                { BeverageEnum.Lungo, new BeverageQuota(50) },
                 // Add other beverages with specific quotas
                 { BeverageEnum.Menu, new BeverageQuota(5) }, 
                 { BeverageEnum.Unknown, new BeverageQuota(5) },
