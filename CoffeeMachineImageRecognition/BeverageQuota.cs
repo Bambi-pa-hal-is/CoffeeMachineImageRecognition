@@ -16,7 +16,7 @@ namespace CoffeeMachineImageRecognition
         public BeverageQuota(int maxCount, TimeSpan? resetInterval = null)
         {
             MaxCount = maxCount;
-            ResetInterval = resetInterval ?? TimeSpan.FromMinutes(0.5); // Default reset interval
+            ResetInterval = resetInterval ?? TimeSpan.FromMinutes(5); // Default reset interval
             CurrentCount = 0;
             LastResetTime = DateTime.UtcNow;
         }
